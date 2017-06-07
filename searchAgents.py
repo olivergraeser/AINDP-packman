@@ -354,17 +354,22 @@ def cornersHeuristic(state, problem):
   it should be admissible (as well as consistent).
   """
   (cx, cy), f0, f1, f2, f3 = state
-  total = 0
-  if not f0:
-    total += mhd((cx, cy), problem.corners[0])
-  if not f1:
-    total += mhd((cx, cy), problem.corners[1])
-  if not f2:
-    total += mhd((cx, cy), problem.corners[2])
-  if not f3:
-    total += mhd((cx, cy), problem.corners[3])
+  corner_array = [(f0, problem.corners[0]),
+                  (f1, problem.corners[1]),
+                  (f2, problem.corners[2]),
+                  (f3, problem.corners[3]),]
 
-  return total
+  remaining_position_array =  [_[1] for _ in corner_array if not _[0]]
+  connecting_points_array = [(cx, cy)] + remaining_position_array
+  nearest_points = []
+
+  for remaining_position in remaining_position_array:
+    nearest_point = min([mhd(remaining_position, connecting_point)
+                         for connecting_point in connecting_points_array
+                         if remaining_position != connecting_point])
+    nearest_points.append(nearest_point)
+  return sum(nearest_points)
+
 
 
 class AStarCornersAgent(SearchAgent):
