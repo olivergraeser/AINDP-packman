@@ -354,12 +354,33 @@ def cornersHeuristic(state, problem):
   it should be admissible (as well as consistent).
   """
   (cx, cy), f0, f1, f2, f3 = state
+
+  i0, i1, i2, i3 = [int(_) for _ in [f0, f1, f2, f3]]
   corner_array = [(f0, problem.corners[0]),
                   (f1, problem.corners[1]),
                   (f2, problem.corners[2]),
-                  (f3, problem.corners[3]),]
+                  (f3, problem.corners[3]), ]
+  remaining_position_array = [_[1] for _ in corner_array if not _[0]]
+  remaining_total = len(remaining_position_array)
 
-  remaining_position_array =  [_[1] for _ in corner_array if not _[0]]
+  if remaining_total == 4:
+    return min([mhd((cx,cy), _)  for _ in problem.corners ]) + \
+           2 * (min(problem.walls.height, problem.walls.width) - 2) + \
+           (max(problem.walls.height, problem.walls.width) - 2)
+  elif remaining_total == 3:
+      return problem.walls.height + problem.walls.width + min([mhd((cx, cy), _)
+                                                               for _ in remaining_position_array])
+  elif remaining_total == 2:
+      return mhd(remaining_position_array[0], remaining_position_array[1]) + min([mhd((cx, cy), _)
+                                                               for _ in remaining_position_array])
+  elif remaining_total == 1:
+    return mhd((cx, cy), remaining_position_array[0])
+
+  else:
+    return 0
+
+
+
   connecting_points_array = [(cx, cy)] + remaining_position_array
   nearest_points = []
 
